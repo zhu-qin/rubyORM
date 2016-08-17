@@ -1,8 +1,6 @@
 require_relative 'db_connection'
 require 'active_support/inflector'
 require 'byebug'
-# NB: the attr_accessor we wrote in phase 0 is NOT used in the rest
-# of this project. It was only a warm up.
 
 class SQLObject
   attr_accessor :attributes
@@ -24,7 +22,7 @@ class SQLObject
   def self.finalize!
     self.columns.each do |attr|
       define_method(attr){self.attributes[attr]}
-      define_method("#{attr}="){|new_attr| self.attributes[attr] = new_attr}
+      define_method("#{attr}="){|val| self.attributes[attr] = val}
     end
   end
 

@@ -15,8 +15,8 @@ module Searchable
       #{search}
     SQL
     parse_all(result)
-  
   end
+  
 end
 
 class SQLObject
