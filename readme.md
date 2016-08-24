@@ -34,8 +34,10 @@ Human.create(human_attributes)
 class Human < RubyORM
   self.finalize!
 
-#has many accepts for its first argument the name of the method that you want the association to be. the second argument is an options hash that has key value pairs that defines the relationship between the tables.
-#calling has_many will create a method for the Human class where each instance of human can call the dogs method to retrieve all dogs that have its foreign_key pointing to the human instance.
+#has many accepts for its first argument the name of the method that you want the association to be. the second argument is an options hash
+#that has key value pairs that defines the relationship between the tables.
+#calling has_many will create a method for the Human class where each instance of human can call the dogs method to retrieve all dogs that
+#have its foreign_key pointing to the human instance.
   has_many(
     :dogs,
     class_name: "Dog",
@@ -43,7 +45,8 @@ class Human < RubyORM
     primary_key: :id
   )
 
-#similarly belongs_to creates a method for a relationship where each instance has it foreign_key point to an entry on the table that has the given class_name
+# similarly belongs_to creates a method for a relationship where each instance has it foreign_key points
+# to an entry on the table that has the given class_name
   belongs_to(
     :house,
     class_name: "House",
@@ -63,7 +66,9 @@ class Dog < RubyORM
    primary_key: :id
   )
 
-  # has_one_through - Class method that accepts method_name, through_name, and source_name. Creates an instance method (method_name), that connects two previously defined associations. The through_name is the method defined in the first association and the source_name is the method thats defined on the class in which the through_name was defined.
+  # has_one_through - Class method that accepts method_name, through_name, and source_name. Creates an instance method (method_name),
+  # that connects two previously defined associations. The through_name is the method defined in the first association and the source_name
+  # is the method thats defined on the class in which the through_name was defined.
 
   has_one_through(
     :house,
@@ -75,5 +80,7 @@ end
 ````
 
 #future additions
-joins
-has_many_through
+
+###joins
+###validations
+###has_many_through
