@@ -1,7 +1,6 @@
-require_relative '02_searchable'
+require_relative 'searchable'
 require 'active_support/inflector'
 
-# Phase IIIa
 class AssocOptions
   attr_accessor(
     :foreign_key,
@@ -16,6 +15,7 @@ class AssocOptions
   def table_name
     model_class.table_name
   end
+  
 end
 
 class BelongsToOptions < AssocOptions
@@ -36,7 +36,11 @@ class HasManyOptions < AssocOptions
 end
 
 module Associatable
-  # Phase IIIb
+
+  def assoc_options
+    @assoc_options ||= {}
+  end
+
   def belongs_to(name, options = {})
     self.assoc_options[name] = BelongsToOptions.new(name, options)
     define_method(name) do
@@ -51,16 +55,40 @@ module Associatable
       options = self.class.assoc_options[name]
       options.class_name.constantize.where(options.foreign_key => self.attributes[:id])
     end
-
   end
 
-  def assoc_options
-    @assoc_options ||= {}
-    @assoc_options
-    # Wait to implement this in Phase IVa. Modify `belongs_to`, too.
+  def has_one_through(name, through_name, source_name)
+
+    define_method(name) do
+      through_opts = self.class.assoc_options[through_name]
+      source_opts = through_opts.model_class.assoc_options[source_name]
+
+      through_table = through_opts.table_name
+      through_fk = through_opts.foreign_key
+      through_pk = through_opts.primary_key
+
+      source_table = source_opts.table_name
+      source_fk = source_opts.foreign_key
+      source_pk = source_opts.primary_key
+
+      value = self.send(through_opts.foreign_key)
+      results = DBConnection.execute(<<-SQL, value)
+
+      SELECT
+        #{source_table}.*
+      FROM
+        #{through_table}
+      JOIN
+        #{source_table} ON #{through_table}.#{source_fk} = #{source_table}.#{source_pk}
+      WHERE
+        #{through_table}.#{through_pk} = ?
+      SQL
+      res = source_opts.model_class.parse_all(results).first
+    end
   end
+
 end
 
-class SQLObject
+class RubyORM
   extend Associatable
 end

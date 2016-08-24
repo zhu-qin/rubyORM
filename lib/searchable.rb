@@ -1,5 +1,5 @@
 require_relative 'db_connection'
-require_relative '01_sql_object'
+require_relative 'ruby_orm'
 
 module Searchable
   def where(params)
@@ -16,11 +16,9 @@ module Searchable
     SQL
     parse_all(result)
   end
-  
+
 end
 
-class SQLObject
-  #extend allows for methods in the module to be used as class methods
-  #include allows for methods in the module to be used as instance methods
+class RubyORM
   extend Searchable
 end

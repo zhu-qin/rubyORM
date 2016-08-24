@@ -2,11 +2,11 @@ require_relative 'db_connection'
 require 'active_support/inflector'
 require 'byebug'
 
-class SQLObject
+class RubyORM
   attr_accessor :attributes
   def self.columns
     return @columns if @columns
-    cols = DBConnection.execute2(<<-SQL)
+    cols = DBConnection.execute2(<<-SQL).first
       SELECT
         *
       FROM
@@ -14,9 +14,12 @@ class SQLObject
       LIMIT
         0
     SQL
-    @columns = cols.first.map! do |k,v|
-      k.to_sym
-    end
+    cols.map!(&:to_sym)
+    @columns = cols
+  end
+
+  def self.table_name_exceptions
+    @table_name_exceptions = {"Human" => "humans"}
   end
 
   def self.finalize!
@@ -31,7 +34,11 @@ class SQLObject
   end
 
   def self.table_name
-    @table_name ||= self.to_s.tableize
+    if self.table_name_exceptions[self.to_s]
+      @table_name = self.table_name_exceptions[self.to_s]
+    else
+      @table_name ||= self.to_s.tableize
+    end
   end
 
   def self.all
@@ -41,7 +48,6 @@ class SQLObject
       FROM
       #{self.table_name}
     SQL
-
     self.parse_all(rows)
   end
 
@@ -61,6 +67,10 @@ class SQLObject
         #{table_name}.id = ?
     SQL
     result = self.parse_all(row).first
+  end
+
+  def self.create(params)
+    self.new(params).save
   end
 
   def initialize(params = {})
@@ -97,7 +107,6 @@ class SQLObject
   end
 
   def update
-
     col_names = self.class.columns.map do |col_name|
       "#{col_name.to_s} = ?"
     end.join(", ")
@@ -110,10 +119,10 @@ class SQLObject
     WHERE
       #{self.class.table_name}.id = ?
     SQL
-
   end
 
   def save
     self.id.nil? ? self.insert : self.update
   end
+
 end
