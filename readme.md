@@ -75,6 +75,5 @@ end
 ````
 
 #future additions
-
-#joins
-#has_many_through
+joins
+has_many_through
