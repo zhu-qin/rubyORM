@@ -16,7 +16,6 @@ module Searchable
     SQL
     parse_all(result)
   end
-
 end
 
 class RubyORM

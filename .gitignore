@@ -13,6 +13,4 @@
 !/log/.keep
 /tmp
 
-/rubyorm/spec
-/rubyorm/.rspec
-/rubyorm/.byebug_history
+.byebug_history

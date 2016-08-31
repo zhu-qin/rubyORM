@@ -2,6 +2,13 @@
 
 SQLite3 ORM built with ruby.
 
+####Load Files
+````ruby
+#load up the associatable file and test file with pry or irb
+load 'lib/associatable.rb'
+load 'test/humans_dogs.rb'
+````
+
 ####Database Interface
 ```ruby
 #classes should be singularize words of the table names that the class is attempting to model.
